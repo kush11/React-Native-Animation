@@ -22,12 +22,27 @@ class App extends PureComponent {
   renderCard(item) {
     return (
       <Card
+        key={item.id}
+        title={item.text}
         image={{ uri: item.uri }}
-        title={item.text}>
+      >
+        <Text style={{ marginBottom: 10 }}>
+          The idea with React Native Elements is more about component structure than actual design.
+        </Text>
         <Button
           icon={{ name: 'code' }}
           buttonStyle={{ borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0 }}
           title='VIEW NOW' />
+      </Card>
+    )
+  }
+
+  renderNoMoreCards() {
+    return (
+      <Card title='All done'>
+        <Text>There is no more content</Text>
+        <Button
+          title='Get More' />
       </Card>
     )
   }
@@ -38,6 +53,9 @@ class App extends PureComponent {
         <Deck
           data={DATA}
           renderCard={this.renderCard}
+          // onSwipeLeft={(item) => console.log(item, 'onSwipeLeft')}
+          // onSwipeRight={(item) => console.log(item, 'onSwipeRight')}
+          renderNoMoreCards={this.renderNoMoreCards}
         />
       </View>
     );
