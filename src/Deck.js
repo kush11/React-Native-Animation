@@ -1,5 +1,12 @@
 import React, { PureComponent } from 'react';
-import { View, Animated, PanResponder, Dimensions } from 'react-native';
+import {
+    View,
+    Animated,
+    PanResponder,
+    Dimensions,
+    LayoutAnimation,
+    UIManager
+} from 'react-native';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -39,6 +46,17 @@ class Deck extends PureComponent {
             position,
             index: 0
         };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.data !== this.props.data) {
+            this.setState({ index: 0 });
+        }
+    }
+
+    componentWillUpdate() {
+        UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+        LayoutAnimation.spring();
     }
 
     forceSwipe(direction) {
@@ -81,26 +99,32 @@ class Deck extends PureComponent {
         }
 
         return this.props.data.map((item, i) => {
-            if (i < this.state.index) {
-                return null;
+            if (i < this.state.index) { 
+                return null; 
             }
 
             if (i === this.state.index) {
                 return (
                     <Animated.View
-                        style={[this.getCardStyle(), styles.cardStyle]}
-                        {...this.state.panResponder.panHandlers}>
+                        key={item.id}
+                        style={[this.getCardStyle(), styles.cardStyle, { zIndex: 99 }]}
+                        {...this.state.panResponder.panHandlers}
+                    >
                         {this.props.renderCard(item)}
                     </Animated.View>
                 )
             }
             return (
-                <View key={item.id} style={styles.cardStyle}>
+                <Animated.View
+                    key={item.id}
+                    style={[styles.cardStyle, { top: 10 * (i - this.state.index), zIndex: 5 }]}
+                >
                     {this.props.renderCard(item)}
-                </View>
-            )
+                </Animated.View>
+            );
         }).reverse();
     }
+
     render() {
         return (
             <View>
@@ -112,8 +136,7 @@ class Deck extends PureComponent {
 const styles = {
     cardStyle: {
         position: 'absolute',
-        left: 0,
-        right: 0
+        width: SCREEN_WIDTH
     }
 }
 
